@@ -4,6 +4,6 @@
 ## scripts
 ########################
 SUBDIRS =
-ALLSCRIPTS = qstart_vm qnet_up qnet_down
+ALLSCRIPTS = qstart_vm qnet_up qnet_down qnet_getip
 dist_bin_SCRIPTS = $(ALLSCRIPTS)
 CLEANFILES = $(ALLSCRIPTS) .doxygen
