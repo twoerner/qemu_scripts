@@ -1,0 +1,29 @@
+README file for project 'qemu_scripts'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Assuming:
+	1. you have a bunch of virtual disks into which you installed a bunch
+	   VMs using Qemu
+	2. each VM disk is in its own directory
+
+If:
+   you create a 'CONFIG' file in each directory, one for each VM
+
+Then:
+   you can use the scripts in this project to start the VMs and setup their
+   networking
+
+
+The required CONFIG file requires the following items:
+	MACADDR
+	IPBASE
+
+MACADDR:
+	provide a unique MAC address for each VM
+	e.g.
+		MACADDR=DE:AD:BE:EF:00:nn
+
+IPBASE:
+	the base of the IP address you want this VM to use
+	e.g.
+		IPBASE=192.168.8.
