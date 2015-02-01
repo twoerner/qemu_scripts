@@ -1,0 +1,47 @@
+#!/bin/bash
+
+usage() {
+	echo "sudo $(basename $0) <tap-dev>"
+}
+
+checkenv() {
+	if [ -z "${!1}" ]; then
+		echo "required env var '$1' not defined"
+		exit 1
+	fi
+}
+
+findcmd() {
+	which $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "can't find required binary: '$1'"
+		exit 1
+	fi
+}
+
+checkenv IPBASE
+findcmd tunctl
+findcmd iptables
+
+if [ $EUID -ne 0 ]; then
+	echo "Error: This script $(basename $0) must be run with root privileges"
+	exit 1
+fi
+
+if [ $# -ne 1 ]; then
+	usage
+	exit 1
+fi
+
+TAPDEV=$1
+tunctl -d $TAPDEV
+
+# cleanup the remaining iptables rules
+iptables -t nat -D POSTROUTING -j MASQUERADE -s ${IPBASE}0/24
+
+# kill dnsmasq
+if [ -f dnsmasq.pid ]; then
+        kill $(cat dnsmasq.pid)
+        rm -f dnsmasq.pid
+        rm -f dnsmasq.log
+fi

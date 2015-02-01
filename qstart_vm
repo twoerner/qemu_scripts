@@ -1,0 +1,73 @@
+#!/bin/bash
+
+checkenv() {
+	if [ -z "${!1}" ]; then
+		echo "required env var '$1' not defined"
+		exit 1
+	fi
+}
+
+findcmd() {
+	which $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "can't find required binary: '$1'"
+		exit 1
+	fi
+}
+
+if [ $# -ne 1 ]; then
+	echo "usage: $(basename $0) <image>"
+	exit 1
+fi
+
+# required cmdline arg is the image to run
+IMAGE=$1
+if [ ! -e $IMAGE ]; then
+	echo "image file \"$IMAGE\" not found"
+	exit 1
+fi
+
+# find the CONFIG file in the same dir as the image
+IMAGEDIR="$(dirname $1)/"
+if [ ! -e "$IMAGEDIR/CONFIG" ]; then
+	echo "can't find CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+source "$IMAGEDIR/CONFIG" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo "can't source CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+
+checkenv MACADDR
+export MACADDR=$MACADDR
+checkenv USERID
+export USERID=$USERID
+checkenv GROUPID
+export GROUPID=$GROUPID
+checkenv IPBASE
+export IPBASE=$IPBASE
+checkenv HOSTIP
+export HOSTIP=$HOSTIP
+
+findcmd qnet_up
+findcmd qnet_down
+
+TAPDEV=$(sudo -E $(dirname $(which $0))/qnet_up)
+if [ $? -ne 0 ]; then
+	echo "qnet_up failed"
+	exit 1
+fi
+echo "tap device: $TAPDEV"
+
+qemu-system-x86_64 \
+	-enable-kvm \
+	-cpu host \
+	-smp sockets=1,cores=2,threads=2 \
+	-m 6144 \
+	-drive file=$IMAGE,if=virtio \
+	-net nic,model=virtio,macaddr=$MACADDR \
+	-net tap,ifname=$TAPDEV,script=no,downscript=no \
+	-nographic
+
+sudo -E $(dirname $(which $0))/qnet_down $TAPDEV

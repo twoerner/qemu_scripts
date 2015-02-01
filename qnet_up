@@ -1,0 +1,74 @@
+#!/bin/bash
+
+usage() {
+	echo "sudo $(basename $0)"
+}
+
+checkenv() {
+	if [ -z "${!1}" ]; then
+		echo "required env var '$1' not defined"
+		exit 1
+	fi
+}
+
+findcmd() {
+	which $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "can't find required binary: '$1'"
+		exit 1
+	fi
+}
+
+if [ $EUID -ne 0 ]; then
+	echo "Error: This script must be run with root privileges"
+	exit 1
+fi
+
+if [ $# -ne 0 ]; then
+	usage
+	exit 1
+fi
+
+checkenv USERID
+checkenv GROUPID
+checkenv IPBASE
+checkenv HOSTIP
+
+findcmd tunctl
+findcmd ip
+findcmd iptables
+findcmd dnsmasq
+
+TAPDEV=$(tunctl -b -u $USERID -g $GROUPID 2>&1)
+STATUS=$?
+if [ $STATUS -ne 0 ]; then
+	echo "tunctl failed:"
+	exit 1
+fi
+
+ip addr add $HOSTIP/32 broadcast ${IPBASE}255 dev $TAPDEV
+ip link set dev $TAPDEV up
+ip route add ${IPBASE}0/24 dev $TAPDEV
+
+# setup NAT for tap$n interface to have internet access in QEMU
+iptables -t nat -A POSTROUTING -j MASQUERADE -s ${IPBASE}0/24
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 1 > /proc/sys/net/ipv4/conf/$TAPDEV/proxy_arp
+iptables -P FORWARD ACCEPT
+
+# startup dnsmasq
+dnsmasq \
+	--strict-order \
+	--except-interface=lo \
+	--interface=$TAPDEV \
+	--listen-address=$HOSTIP \
+	--bind-interfaces \
+	-d \
+	-q \
+	--dhcp-range=${TAPDEV},${IPBASE}5,${IPBASE}20,255.255.255.0,${IPBASE}255 \
+	--conf-file="" \
+	> dnsmasq.log 2>&1 &
+echo $! > dnsmasq.pid
+
+echo $TAPDEV
+exit 0
