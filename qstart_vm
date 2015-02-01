@@ -41,12 +41,12 @@ fi
 
 checkenv MACADDR
 export MACADDR=$MACADDR
-checkenv USERID
-export USERID=$USERID
-checkenv GROUPID
-export GROUPID=$GROUPID
 checkenv IPBASE
 export IPBASE=$IPBASE
+export USERID=$(whoami)
+checkenv USERID
+export GROUPID=$(groups | cut -d' ' -f1)
+checkenv GROUPID
 
 findcmd qnet_up
 findcmd qnet_down
