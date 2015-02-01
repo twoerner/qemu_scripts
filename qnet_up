@@ -32,7 +32,6 @@ fi
 checkenv USERID
 checkenv GROUPID
 checkenv IPBASE
-checkenv HOSTIP
 
 findcmd tunctl
 findcmd ip
@@ -46,7 +45,7 @@ if [ $STATUS -ne 0 ]; then
 	exit 1
 fi
 
-ip addr add $HOSTIP/32 broadcast ${IPBASE}255 dev $TAPDEV
+ip addr add ${IPBASE}1/32 broadcast ${IPBASE}255 dev $TAPDEV
 ip link set dev $TAPDEV up
 ip route add ${IPBASE}0/24 dev $TAPDEV
 
@@ -61,7 +60,7 @@ dnsmasq \
 	--strict-order \
 	--except-interface=lo \
 	--interface=$TAPDEV \
-	--listen-address=$HOSTIP \
+	--listen-address=${IPBASE}1 \
 	--bind-interfaces \
 	-d \
 	-q \

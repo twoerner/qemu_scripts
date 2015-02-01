@@ -47,8 +47,6 @@ checkenv GROUPID
 export GROUPID=$GROUPID
 checkenv IPBASE
 export IPBASE=$IPBASE
-checkenv HOSTIP
-export HOSTIP=$HOSTIP
 
 findcmd qnet_up
 findcmd qnet_down
