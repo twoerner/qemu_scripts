@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Required arg: image, including location
+# Purpose: return the IP address of a running image
+# Output: IP address of running image, or error string
+# Returns: 0 on success
+
+checkenv() {
+	if [ -z "${!1}" ]; then
+		echo "required env var '$1' not defined"
+		exit 1
+	fi
+}
+
+findcmd() {
+	which $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "can't find required binary: '$1'"
+		exit 1
+	fi
+}
+
+findcmd arp
+findcmd grep
+findcmd tr
+findcmd cut
+
+if [ $# -ne 1 ]; then
+	echo "usage: $(basename $0) <image>"
+	exit 1
+fi
+
+# required cmdline arg is the image to run
+IMAGE=$1
+if [ ! -e $IMAGE ]; then
+	echo "image file \"$IMAGE\" not found"
+	exit 1
+fi
+
+# find the CONFIG file in the same dir as the image
+IMAGEDIR="$(dirname $1)/"
+if [ ! -e "$IMAGEDIR/CONFIG" ]; then
+	echo "can't find CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+source "$IMAGEDIR/CONFIG" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo "can't source CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+
+checkenv MACADDR
+IMGIPADDR=$(arp -n | grep -i $MACADDR | tr -s ' ' | cut -d' ' -f1)
+checkenv IMGIPADDR > /dev/null
+
+echo $IMGIPADDR
