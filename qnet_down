@@ -20,6 +20,7 @@ findcmd() {
 }
 
 checkenv IPBASE
+checkenv IMAGEDIR
 findcmd tunctl
 findcmd iptables
 
@@ -40,8 +41,8 @@ tunctl -d $TAPDEV
 iptables -t nat -D POSTROUTING -j MASQUERADE -s ${IPBASE}0/24
 
 # kill dnsmasq
-if [ -f dnsmasq.pid ]; then
-        kill $(cat dnsmasq.pid)
-        rm -f dnsmasq.pid
-        rm -f dnsmasq.log
+if [ -f $IMAGEDIR/dnsmasq.pid ]; then
+        kill $(cat $IMAGEDIR/dnsmasq.pid)
+        rm -f $IMAGEDIR/dnsmasq.pid
+        rm -f $IMAGEDIR/dnsmasq.log
 fi

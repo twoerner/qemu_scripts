@@ -38,6 +38,7 @@ if [ $? -ne 0 ]; then
 	echo "can't source CONFIG file at image location \"$IMAGEDIR\""
 	exit 1
 fi
+export IMAGEDIR=$IMAGEDIR
 
 checkenv MACADDR
 export MACADDR=$MACADDR

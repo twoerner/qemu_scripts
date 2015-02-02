@@ -32,6 +32,7 @@ fi
 checkenv USERID
 checkenv GROUPID
 checkenv IPBASE
+checkenv IMAGEDIR
 
 findcmd tunctl
 findcmd ip
@@ -66,8 +67,8 @@ dnsmasq \
 	-q \
 	--dhcp-range=${TAPDEV},${IPBASE}5,${IPBASE}20,255.255.255.0,${IPBASE}255 \
 	--conf-file="" \
-	> dnsmasq.log 2>&1 &
-echo $! > dnsmasq.pid
+	> $IMAGEDIR/dnsmasq.log 2>&1 &
+echo $! > $IMAGEDIR/dnsmasq.pid
 
 echo $TAPDEV
 exit 0
