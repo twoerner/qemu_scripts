@@ -17,6 +17,7 @@ Then:
 The required CONFIG file requires the following items:
 	MACADDR
 	IPBASE
+	NOPWUSER
 
 MACADDR:
 	provide a unique MAC address for each VM
@@ -27,3 +28,6 @@ IPBASE:
 	the base of the IP address you want this VM to use
 	e.g.
 		IPBASE=192.168.8.
+
+NOPWUSER: (optional, used with qrun_cmd)
+	a username from in the VM that doesn't require a pw

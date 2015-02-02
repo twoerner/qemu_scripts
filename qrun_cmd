@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+# Required args:
+#   1. image, including location
+#   2. command to run (either as a file or the cmd itself)
+#      (if using a file, put ';' at end of each line)
+# Purpose: run a cmd in a VM
+# Output: same as command
+# Returns: same as command
+
+checkenv() {
+	if [ -z "${!1}" ]; then
+		echo "required env var '$1' not defined"
+		exit 1
+	fi
+}
+
+findcmd() {
+	which $1 > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "can't find required binary: '$1'"
+		exit 1
+	fi
+}
+
+findcmd qnet_getip
+findcmd ssh
+
+if [ $# -ne 2 ]; then
+	echo "usage: $(basename $0) <image> <cmd>"
+	exit 1
+fi
+
+# first required cmdline arg is the image to run
+IMAGE=$1
+if [ ! -e $IMAGE ]; then
+	echo "image file \"$IMAGE\" not found"
+	exit 1
+fi
+
+# find the CONFIG file in the same dir as the image
+IMAGEDIR="$(dirname $1)/"
+if [ ! -e "$IMAGEDIR/CONFIG" ]; then
+	echo "can't find CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+source "$IMAGEDIR/CONFIG" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	echo "can't source CONFIG file at image location \"$IMAGEDIR\""
+	exit 1
+fi
+
+# we get the VM user from the CONFIG file
+checkenv NOPWUSER
+
+# get the IP
+VMIP=$(qnet_getip "$IMAGE")
+checkenv VMIP
+
+# second required cmdline arg is the command to run
+RETVAL=0
+if [ -r "$2" ]; then
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${NOPWUSER}@${VMIP} $(cat "$2")
+	RETVAL=$?
+else
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${NOPWUSER}@${VMIP} "$2"
+	RETVAL=$?
+fi
+
+exit $RETVAL
