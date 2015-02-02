@@ -25,7 +25,7 @@ The required CONFIG file requires the following items:
 The following items are optional in the CONFIG file:
 	NOPWUSER
 	VMMEM
-
+	VMSMP
 
 
 MACADDR:
@@ -43,3 +43,7 @@ NOPWUSER: (optional, used with qrun_cmd)
 
 VMMEM: (optional)
 	allows the user to specify a memory size, default 512M
+
+VMSMP: (optional)
+	allows a user to specify the SMP settings
+	default: 1 core 1 thread (i.e. 1 cpu)
