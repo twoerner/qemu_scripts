@@ -27,6 +27,13 @@ if [ ! -e $IMAGE ]; then
 	exit 1
 fi
 
+# see if this image is already running
+ps ax | grep qemu-system | grep $(basename $IMAGE) > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo "this image ($(basename $IMAGE)) already appears to be running"
+	exit 1
+fi
+
 # find the CONFIG file in the same dir as the image
 IMAGEDIR="$(dirname $1)/"
 if [ ! -e "$IMAGEDIR/CONFIG" ]; then
