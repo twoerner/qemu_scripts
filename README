@@ -14,10 +14,19 @@ Then:
    networking
 
 
+
+*****************************************************************************
+CONFIG file
+
 The required CONFIG file requires the following items:
 	MACADDR
 	IPBASE
+
+The following items are optional in the CONFIG file:
 	NOPWUSER
+	VMMEM
+
+
 
 MACADDR:
 	provide a unique MAC address for each VM
@@ -31,3 +40,6 @@ IPBASE:
 
 NOPWUSER: (optional, used with qrun_cmd)
 	a username from in the VM that doesn't require a pw
+
+VMMEM: (optional)
+	allows the user to specify a memory size, default 512M

@@ -62,7 +62,7 @@ qemu-system-x86_64 \
 	-enable-kvm \
 	-cpu host \
 	-smp sockets=1,cores=2,threads=2 \
-	-m 6144 \
+	-m ${VMMEM:-512} \
 	-drive file=$IMAGE,if=virtio \
 	-net nic,model=virtio,macaddr=$MACADDR \
 	-net tap,ifname=$TAPDEV,script=no,downscript=no \
