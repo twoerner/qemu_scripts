@@ -55,6 +55,10 @@ export USERID=$(whoami)
 checkenv USERID
 export GROUPID=$(groups | cut -d' ' -f1)
 checkenv GROUPID
+GRAPHIC=""
+if [ -z "$USEGUI" ]; then
+	GRAPHIC="-nographic"
+fi
 
 findcmd qnet_up
 findcmd qnet_down
@@ -74,6 +78,6 @@ qemu-system-x86_64 \
 	-drive file=$IMAGE,if=virtio \
 	-net nic,model=virtio,macaddr=$MACADDR \
 	-net tap,ifname=$TAPDEV,script=no,downscript=no \
-	-nographic
+	$GRAPHIC
 
 sudo -E $(dirname $(which $0))/qnet_down $TAPDEV

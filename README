@@ -26,6 +26,7 @@ The following items are optional in the CONFIG file:
 	NOPWUSER
 	VMMEM
 	VMSMP
+	CMDLINEONLY
 
 
 MACADDR:
@@ -47,3 +48,8 @@ VMMEM: (optional)
 VMSMP: (optional)
 	allows a user to specify the SMP settings
 	default: 1 core 1 thread (i.e. 1 cpu)
+
+USEGUI: (optional)
+	if defined in any way, assume the VM needs to run a GUI
+	(yes, even if it is defined to 0)
+	default: don't use a GUI (use cmdline only)
