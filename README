@@ -26,7 +26,7 @@ The following items are optional in the CONFIG file:
 	NOPWUSER
 	VMMEM
 	VMSMP
-	CMDLINEONLY
+	USEGUI
 
 
 MACADDR:
