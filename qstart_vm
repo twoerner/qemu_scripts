@@ -51,7 +51,7 @@ checkenv MACADDR
 export MACADDR=$MACADDR
 
 GRAPHIC=""
-if [ -z "$USEGUI" ]; then
+if [ -z "$USEGUI" -o x"$USEGUI" = x"0" ]; then
 	GRAPHIC="-nographic"
 fi
 

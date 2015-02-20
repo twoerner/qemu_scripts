@@ -51,8 +51,7 @@ VMSMP: (optional)
 	default: 1 core 1 thread (i.e. 1 cpu)
 
 USEGUI: (optional)
-	if defined in any way, assume the VM needs to run a GUI
-	(yes, even if it is defined to 0)
+	if defined and non-zero, assume the VM needs to run a GUI
 	default: don't use a GUI (use cmdline only)
 
 NETUSER: (optional)
