@@ -49,26 +49,33 @@ export IMAGEDIR=$IMAGEDIR
 
 checkenv MACADDR
 export MACADDR=$MACADDR
-checkenv IPBASE
-export IPBASE=$IPBASE
-export USERID=$(whoami)
-checkenv USERID
-export GROUPID=$(groups | cut -d' ' -f1)
-checkenv GROUPID
+
 GRAPHIC=""
 if [ -z "$USEGUI" ]; then
 	GRAPHIC="-nographic"
 fi
 
-findcmd qnet_up
-findcmd qnet_down
+if [ -z "$NETUSER" -o x"$NETUSER" = x"0" ]; then
+	checkenv IPBASE
+	export IPBASE=$IPBASE
+	export USERID=$(whoami)
+	checkenv USERID
+	export GROUPID=$(groups | cut -d' ' -f1)
+	checkenv GROUPID
 
-TAPDEV=$(sudo -E $(dirname $(which $0))/qnet_up)
-if [ $? -ne 0 ]; then
-	echo "qnet_up failed"
-	exit 1
+	findcmd qnet_up
+	findcmd qnet_down
+
+	TAPDEV=$(sudo -E $(dirname $(which $0))/qnet_up)
+	if [ $? -ne 0 ]; then
+		echo "qnet_up failed"
+		exit 1
+	fi
+	echo "tap device: $TAPDEV"
+	NETCMD="tap,ifname=$TAPDEV,script=no,downscript=no"
+else
+	NETCMD="user"
 fi
-echo "tap device: $TAPDEV"
 
 qemu-system-x86_64 \
 	-enable-kvm \
@@ -77,7 +84,9 @@ qemu-system-x86_64 \
 	-m ${VMMEM:-512} \
 	-drive file=$IMAGE,if=virtio \
 	-net nic,model=virtio,macaddr=$MACADDR \
-	-net tap,ifname=$TAPDEV,script=no,downscript=no \
+	-net $NETCMD \
 	$GRAPHIC
 
-sudo -E $(dirname $(which $0))/qnet_down $TAPDEV
+if [ -z "$NETUSER" -o x"$NETUSER" = x"0" ]; then
+	sudo -E $(dirname $(which $0))/qnet_down $TAPDEV
+fi

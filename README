@@ -27,6 +27,7 @@ The following items are optional in the CONFIG file:
 	VMMEM
 	VMSMP
 	USEGUI
+	NETUSER
 
 
 MACADDR:
@@ -53,3 +54,7 @@ USEGUI: (optional)
 	if defined in any way, assume the VM needs to run a GUI
 	(yes, even if it is defined to 0)
 	default: don't use a GUI (use cmdline only)
+
+NETUSER: (optional)
+	if defined and non-zero, use simple "user" networking
+	default: use non-simple networking
