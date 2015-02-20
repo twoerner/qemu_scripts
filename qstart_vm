@@ -85,6 +85,7 @@ qemu-system-x86_64 \
 	-drive file=$IMAGE,if=virtio \
 	-net nic,model=virtio,macaddr=$MACADDR \
 	-net $NETCMD \
+	-soundhw all \
 	$GRAPHIC
 
 if [ -z "$NETUSER" -o x"$NETUSER" = x"0" ]; then
