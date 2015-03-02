@@ -57,3 +57,14 @@ USEGUI: (optional)
 NETUSER: (optional)
 	if defined and non-zero, use simple "user" networking
 	default: use non-simple networking
+
+QMOUNTVM: (optional)
+	if defined, specifies the local directory and tag for
+	mounting directories from the host computer in the VM
+	NOTES:
+		- can only specify one such shared dir
+		- shared path on host can't have spaces
+	e.g.
+		QMOUNTVM="/home/user/my/dir,DirTag"
+	then in the VM do:
+		# mount -t 9p -o trans=virtio DirTag /somewhere/in/VM
