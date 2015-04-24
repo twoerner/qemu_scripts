@@ -28,6 +28,7 @@ The following items are optional in the CONFIG file:
 	VMSMP
 	USEGUI
 	NETUSER
+	QMOUNTVM
 
 
 MACADDR:
