@@ -3,7 +3,7 @@
 ########################
 ## scripts
 ########################
-SUBDIRS =
+SUBDIRS = examples
 ALLSCRIPTS = qstart_vm qnet_up qnet_down qnet_getip qrun_cmd
 EXTRA_DIST = README
 dist_bin_SCRIPTS = $(ALLSCRIPTS)

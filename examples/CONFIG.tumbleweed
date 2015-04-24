@@ -1,0 +1,5 @@
+MACADDR=DE:AD:BE:EF:00:01
+IPBASE=192.168.8.
+NOPWUSER=trevor
+VMMEM=6144
+VMSMP="sockets=1,cores=2,threads=2"

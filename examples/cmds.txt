@@ -1,0 +1,127 @@
+$ qemu-img create -f qcow2 c++.qcow2 200G
+$ qemu-system-x86_64 \
+	-enable-kvm \
+	-smp 2 \
+	-cpu host \
+	-m 4096 \
+	-drive file=/extra/qemu+kvm/c++/opensuse_tumbleweed_c++.qcow2,if=virtio \
+	-net nic,model=virtio \
+	-net user \
+	-cdrom /home/trevor/Downloads/openSUSE-Tumbleweed-NET-x86_64-Snapshot20150126-Media.iso
+
+- just do basic, cmdline-only install
+- run image
+$ qemu-system-x86_64 -enable-kvm -cpu host -smp 6 -m 8192 -net nic,model=virtio -net user -drive file=/extra/qemu+kvm/c++/c++.qcow2 -nographic
+
+	=> run image, perform the following configuration
+	- convert the 'oebuilder' to a paswordless account
+	# passwd -d oebuilder
+	# pam-config -a --unix-nullok
+
+	- stop and disable firewall
+	# SuSEfirewall2 off
+
+	- enable ssh
+	# systemctl enable sshd.service
+	# systemctl start sshd.service
+
+	- allow empty password login
+	<edit /etc/ssh/sshd_config, change:>
+	  #PermitEmptyPasswords no
+	<to:>
+	  PermitEmptyPasswords yes
+
+	- allow the 'oebuilder' user full sudo access
+	# visudo
+	  add line "oebuilder ALL=(ALL) NOPASSWD: ALL
+
+	- add serial console to kernel cmdline (grub2)
+	- edit /etc/default/grub, edit GRUB_CMDLINE_LINUX_DEFAULT:
+	  to add
+		" console=ttyS0,115200"
+	  to remove
+		"splash=silent quiet"
+	- edit /etc/sysconfig/bootloader, add
+		DEFAULT_APPEND="console=ttyS0,115200"
+	# grub2-mkconfig -o /boot/grub2/grub.cfg
+	
+	- to stop anoying console messages (serial8250: too much work for
+	  irq4) from flooding the console
+	- edit /etc/sysctl.conf and add:
+		kernel.printk = 3 4 1 3
+		(default      = 4 4 1 7)
+
+	- copy/scp /usr/bin/resize from the desktop system (xterm)
+	  (this maybe be handy for console tty resize issues)
+	  $ eval $(/usr/bin/resize)
+	
+	- configure /tmp for tmpfs, add the following to /etc/fstab:
+	  none /tmp tmpfs defaults,noatime 0 0
+
+	# shutdown -h now
+
+- take snapshot
+$ qemu-img snapshot -c afterInstallAndConfig opensuse_tumbleweed_c++.qcow2
+
+- run with networking
+$ qstart_vm /extra/qemu+kvm/c++/opensuse_tumbleweek_c++.qcow2
+
+packages to install on a fresh suse image:
+	git
+	git-email
+	gcc49-c++
+	man
+	llvm-clang-devel
+	stow
+	mercurial
+		(python-pyOpenSSL)?
+		(libopenssl-devel)?
+		(python-hgtools)?
+	python
+	libtool
+	ncurses-devel
+	make
+	ctags
+	mpc-devel
+	flex
+		(byacc)?
+	zip
+	makeinfo
+	cloog-isl-devel
+	bison
+	patch
+	libcurl-devel
+	libexpat-devel
+	tree
+
+	(more build stuff, specifically: docs)
+	doxygen
+	graphviz
+	libxslt-tools
+	libxslt1
+	libxml2-tools
+	dblatex
+	docbook_5
+	docbook-xsl-stylesheets
+	docbook-utils
+	texlive-latex-bin-bin
+		=> 1529 new packages to install
+		=> download size: ~700MB
+		=> installed size: 1.2GB
+
+configure:
+	gcc:
+		--prefix=...
+		--enable-lto
+		--disable-multilib
+		--enable-gold=yes
+		--enable-languages=c,c++
+	
+	llvm:
+		--prefix=...
+		--enable-optimized
+		--disable-assertions
+	
+	vim:
+		--prefix=...
+		--with-features=big

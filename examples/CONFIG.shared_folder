@@ -1,0 +1,6 @@
+MACADDR=DE:AD:BE:EF:00:05
+IPBASE=192.168.12.
+NOPWUSER=trevor
+VMMEM=8196
+VMSMP="sockets=1,cores=2,threads=2"
+QMOUNTVM="/home/trevor/devel/android/aosp.repo,AospSource"
