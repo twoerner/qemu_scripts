@@ -1,0 +1,29 @@
+2015-apr-27
+
+I wanted to setup sudo so that a specific user (abc) could run "qstart_vm"
+without having to enter superuser passwords on start and stop. The superuser
+password is required to run qnet_up and qnet_down. So what I really wanted was
+the ability to run qnet_up and qnet_down as a specific (abc), regular user.
+
+The biggest problem I kept getting was some sort of error message to say I
+wasn't allowed to preserve the environment (or something like that).
+
+As the superuser run:
+# visudo
+
+Looking through the sudoers file there are a number of configuration options
+that deal with the environment. Specifically, they're there to prevent the
+user's environment from existing in the superuser environment.
+
+What I did to get around this problem was:
+- comment out any lines with "Defaults env_keep = ..."
+- edit the line that said "Defaults env_reset" to say "Defaults !env_reset"
+- add the location of qnet_up and qnet_down to "Defaults secure_path=..."
+- edit qstart_vm, change all instances of "sudo -E" to remove the "-E"
+
+
+I then needed to add a line allowing user "abc" to run these programs without
+the need to supply a password. Therefore add the following line to the bottom
+of the sudoers file:
+
+abc ALL=(ALL) NOPASSWD: /<location>/<of>/qnet_up, /<location>/<of>/qnet_down
