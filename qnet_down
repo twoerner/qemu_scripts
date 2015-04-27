@@ -44,6 +44,6 @@ iptables -t nat -D POSTROUTING -j MASQUERADE -s ${IPBASE}0/24
 if [ -f $IMAGEDIR/dnsmasq.pid ]; then
         kill $(cat $IMAGEDIR/dnsmasq.pid)
         rm -f $IMAGEDIR/dnsmasq.pid
-        rm -f $IMAGEDIR/dnsmasq.log
 fi
+rm -f $IMAGEDIR/dnsmasq.log
 iptables -D INPUT -i tap0 -p udp --dport 67:68 --sport 67:68 -j ACCEPT

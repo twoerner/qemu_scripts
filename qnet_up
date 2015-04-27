@@ -77,7 +77,13 @@ dnsmasq \
 	$DHCPOPT6 \
 	--conf-file="" \
 	> $IMAGEDIR/dnsmasq.log 2>&1 &
-echo $! > $IMAGEDIR/dnsmasq.pid
+
+DNSMASQ_PID=$!
+rm -f $IMAGEDIR/dnsmasq.pid
+PSOUT=$(ps -p $DNSMASQ_PID -o pid=)
+if [ -n "$PSOUT" ]; then
+	echo $DNSMASQ_PID > $IMAGEDIR/dnsmasq.pid
+fi
 
 echo $TAPDEV
 exit 0
