@@ -46,3 +46,4 @@ if [ -f $IMAGEDIR/dnsmasq.pid ]; then
         rm -f $IMAGEDIR/dnsmasq.pid
         rm -f $IMAGEDIR/dnsmasq.log
 fi
+iptables -D INPUT -i tap0 -p udp --dport 67:68 --sport 67:68 -j ACCEPT

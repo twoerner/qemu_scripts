@@ -56,6 +56,14 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 echo 1 > /proc/sys/net/ipv4/conf/$TAPDEV/proxy_arp
 iptables -P FORWARD ACCEPT
 
+# setup DHCP/DNS for client so dnsmasq can work
+iptables -I INPUT -i $TAPDEV -p udp --dport 67:68 --sport 67:68 -j ACCEPT
+UPSTREAMDNS=$(cat /etc/resolv.conf | grep "^nameserver" | head -n1 | cut -d' ' -f2)
+DHCPOPT6=""
+if [ -n "$UPSTREAMDNS" ]; then
+	DHCPOPT6="--dhcp-option=6,${UPSTREAMDNS}"
+fi
+
 # startup dnsmasq
 dnsmasq \
 	--strict-order \
@@ -66,6 +74,7 @@ dnsmasq \
 	-d \
 	-q \
 	--dhcp-range=${TAPDEV},${IPBASE}5,${IPBASE}20,255.255.255.0,${IPBASE}255 \
+	$DHCPOPT6 \
 	--conf-file="" \
 	> $IMAGEDIR/dnsmasq.log 2>&1 &
 echo $! > $IMAGEDIR/dnsmasq.pid
