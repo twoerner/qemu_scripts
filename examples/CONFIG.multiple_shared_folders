@@ -1,0 +1,7 @@
+MACADDR=DE:AD:BE:EF:00:02
+IPBASE=192.168.9.
+NOPWUSER=oebuilder
+VMMEM=2048
+VMSMP=2
+QMOUNTVM[0]="/home/trevor/devel/Downloads,DlDir"
+QMOUNTVM[1]="/home/trevor/devel/yocto/releases/1.8-fido/layers,LayerDir"

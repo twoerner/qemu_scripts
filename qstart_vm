@@ -57,21 +57,26 @@ fi
 
 _MOUNTINFO=""
 if [ -n "$QMOUNTVM" ]; then
-	_QM1=$(echo $QMOUNTVM | cut -d',' -f1)
-	_QM2=$(echo $QMOUNTVM | cut -d',' -f2)
-	if [ -z "$_QM1" -o -z "$_QM2" ]; then
-		echo "the QMOUNTVM variable format is not correct, please see README"
-		exit 1
-	else
-		if [ ! -d "$_QM1" ]; then
-			echo "the path specified in QMOUNTVM ($_QM1) is not a directory"
+	_QCNT=0
+	for _QITEM in ${QMOUNTVM[*]}; do
+		_QM1=$(echo $_QITEM | cut -d',' -f1)
+		_QM2=$(echo $_QITEM | cut -d',' -f2)
+
+		if [ -z "$_QM1" -o -z "$_QM2" ]; then
+			echo "the QMOUNTVM[$_QCNT] variable format is not correct, please see README"
 			exit 1
 		else
-			_MOUNTINFO="-virtfs local,mount_tag=$_QM2,security_model=none,path=$_QM1"
-			echo "to mount \"$_QM1\" in the VM use:"
-			echo "$ sudo mount -t 9p -o trans=virtio $_QM2 /somewhere/in/VM"
+			if [ ! -d "$_QM1" ]; then
+				echo "the path specified in \"$_QM1\" is not a directory"
+				exit 1
+			else
+				_MOUNTINFO="$_MOUNTINFO -virtfs local,mount_tag=$_QM2,security_model=none,path=$_QM1"
+				echo "to mount \"$_QM1\" in the VM use:"
+				echo "$ sudo mount -t 9p -o trans=virtio $_QM2 /somewhere/in/VM${_QCNT}"
+			fi
 		fi
-	fi
+		((++_QCNT))
+	done
 fi
 
 if [ -z "$NETUSER" -o x"$NETUSER" = x"0" ]; then

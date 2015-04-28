@@ -4,7 +4,8 @@ SUBDIRS =
 EXTRA_DIST = cmds.txt \
 	CONFIG.tumbleweed \
 	CONFIG.gui \
-	CONFIG.shared_folder
+	CONFIG.shared_folder \
+	CONFIG.multiple_shared_folders
 
 install-data-local:
 	-$(mkdir_p) $(DOCBASEDIR)/examples

@@ -60,12 +60,55 @@ NETUSER: (optional)
 	default: use non-simple networking
 
 QMOUNTVM: (optional)
-	if defined, specifies the local directory and tag for
+	if defined, specifies a local directory and tag for
 	mounting directories from the host computer in the VM
-	NOTES:
-		- can only specify one such shared dir
-		- shared path on host can't have spaces
+
 	e.g.
-		QMOUNTVM="/home/user/my/dir,DirTag"
-	then in the VM do:
-		# mount -t 9p -o trans=virtio DirTag /somewhere/in/VM
+		in CONFIG file:
+			QMOUNTVM="/home/user/my/dir,DirTag"
+		then in the VM do:
+			# mount -t 9p -o trans=virtio DirTag /somewhere/in/VM
+
+	to specify only one directory you can just use the QMOUNTVM name by
+	itself
+	
+	if you want to specify more than one shared directory, add a
+	zero-based index to each item; e.g.
+		QMOUNTVM[0]="..."
+		QMOUNTVM[1]="..."
+		...
+
+	NOTES:
+		- shared path on host can't have spaces
+			good:
+				QMOUNTVM="/home/someplace/on/host,ABC"
+			bad:
+				QMOUNTVM="/home/some place/on/host,ABC"
+		- index numbering must start at 0 (zero)
+			good:
+				QMOUNTVM[0]="..."
+				QMOUNTVM[1]="..."
+			bad:
+				QMOUNTVM[1]="..."
+				QMOUNTVM[2]="..."
+		- if there are more than one QMOUNTVM items but none of them
+		  have an index, only the last one is used
+		  	e.g.
+		  		QMOUNTVM="/path1,abc"
+		  		QMOUNTVM="/path2,def"
+		  		only /path2 will be used
+		- oddly enough, if there are multiple items, one must be at
+		  index 0 (or no index), the others can be any other positive
+		  number you want
+		  	good:
+		  		QMOUNTVM="/path1,abc"
+		  		QMOUNTVM[1]="/path2,def"
+		  	good:
+		  		QMOUNTVM="/path1,abc"
+		  		QMOUNTVM[4]="/path2,def"
+		  	good:
+		  		QMOUNTVM[4]="/path2,def"
+		  		QMOUNTVM="/path1,abc"
+		  	good:
+		  		QMOUNTVM[4]="/path2,def"
+		  		QMOUNTVM[0]="/path1,abc"
