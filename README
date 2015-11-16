@@ -45,7 +45,8 @@ NOPWUSER: (optional, used with qrun_cmd)
 	a username from in the VM that doesn't require a pw
 
 VMMEM: (optional)
-	allows the user to specify a memory size, default 512M
+	allows the user to specify a memory size in MiB, default 512
+	this is the value provided to qemu's "-m" option
 
 VMSMP: (optional)
 	allows a user to specify the SMP settings
