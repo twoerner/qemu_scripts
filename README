@@ -113,3 +113,22 @@ QMOUNTVM: (optional)
 		  	good:
 		  		QMOUNTVM[4]="/path2,def"
 		  		QMOUNTVM[0]="/path1,abc"
+
+
+*****************************************************************************
+System Updates (with CD/DVD)
+
+At some point a new system update/release might be available and you want to
+temporarily "pop in" the update CD/DVD to update your system. With
+"update.iso" already downloaded to your system and stored at "/path", simply:
+
+	$ qemu-system-x86_64 \
+		-enable-kvm \
+		-cpu host \
+		-smp 1 \
+		-m 512 \
+		-drive file=<drive>.qcow2,if=virtio \
+		-net nic,model=virtio,macaddr=DE:AD:BE:EF:00:04 \
+		-net user \
+		-cdrom /path/update.iso \
+		-boot once=d
