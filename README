@@ -132,3 +132,29 @@ temporarily "pop in" the update CD/DVD to update your system. With
 		-net user \
 		-cdrom /path/update.iso \
 		-boot once=d
+
+
+*****************************************************************************
+Installing a New System (with CD/DVD iso)
+
+To get started and create a new machine (at location "/here", assuming you
+have the required permissions to create/write a file at "/here"):
+
+	$ cd /here
+	$ qemu-img create -f qcow2 <name>.qcow2 <size>G
+
+e.g.
+
+	$ qemu-img create -f qcow2 mydisk.qcow2 20G
+
+Then, with an "install.iso" located at "/path":
+
+	$ qemu-system-x86_64 \
+		-enable-kvm \
+		-smp 2 \ 
+		-cpu host \
+		-m 4096 \
+		-drive file=/here/mydisk.qcow2,if=virtio \
+		-net nic,model=virtio \
+		-net user \
+		-cdrom /path/install.iso
